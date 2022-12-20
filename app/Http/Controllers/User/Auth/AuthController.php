@@ -55,7 +55,7 @@ class AuthController extends Controller{
         )) {
             return response([
                 'message'=>'success',
-                //'user'=>$user,
+                'user'=>auth()->user(),
             ], 200);
         }
 
