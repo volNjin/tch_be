@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\Admin\Auth\LoginController;
+use App\Http\Controllers\Admin\CategoryController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,7 +21,15 @@ use App\Http\Controllers\Admin\Auth\LoginController;
 /*Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });*/
+Route::group(['prefix' => 'admin'], function(){
+    Route::post('auth/login', [LoginController::class, 'login']);
+    Route::post('category/create', [CategoryController::class, 'create']);
+    Route::get('category/index', [CategoryController::class, 'index']);
+    Route::get('category/update', [CategoryController::class, 'update']);
+});
 
 
 Route::post('user/auth/register', [AuthController::class, 'register']);
 Route::post('user/auth/login', [AuthController::class, 'login']);
+Route::post('user/auth/logout', [AuthController::class, 'logout']);
+Route::post('user/auth/changePassword', [AuthController::class, 'changePassword']);

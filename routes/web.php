@@ -15,5 +15,5 @@ use App\Http\Controllers\User\Auth\AuthController;
 |
 */
 
-Route::post('user/auth/register',[AuthController::class, 'register']);
 Route::post('user/auth/login',[AuthController::class, 'login']);
+Route::post('user/auth/logout',[AuthController::class, 'logout']);

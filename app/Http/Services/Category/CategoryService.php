@@ -31,19 +31,20 @@ class CategoryService
     public function create($request)
     {
         try {
-            Category::create([
+            $category=Category::create([
                 'name' => (string)$request->input('name'),
                 'parent_id' => (int)$request->input('parent_id'),
                 'description' => (string)$request->input('description'),
             ]);
-
-            Session::flash('success', 'Tạo Danh Mục Thành Công');
+            
+            return response([
+                'success'=> 'Tạo Danh Mục Thành Công',
+                'category'=> $category,
+            ]);
         } catch (\Exception $err) {
             Session::flash('error', $err->getMessage());
-            return false;
+            
         }
-
-        return true;
     }
 
     public function update($request, $Category): bool

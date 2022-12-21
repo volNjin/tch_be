@@ -11,43 +11,47 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    protected $CategoryService;
+    protected $categoryService;
 
-    public function __construct(CategoryService $CategoryService){
-        $this->CategoryService = $CategoryService;
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
     }
 
-    public function create(){
-        return view('admin.Category.add', [
-            'title' => 'Thêm Danh Mục Mới',
-            'categories' => $this->CategoryService->getParent()
-        ]);
-    }
-
-    public function store(CreateFormRequest $request){
-        $this->CategoryService->create($request);
-
-        return redirect()->back();
+    public function create(Request $request){
+        try {
+            $category=Category::create([
+                'name' => (string)$request->input('name'),
+                'parent_id' => (int)$request->input('parent_id'),
+                'description' => (string)$request->input('description'),
+            ]);
+            
+            return response([
+                'success'=> 'Tạo Danh Mục Thành Công',
+                'category'=> $category,
+            ]);
+        } catch (\Exception $err) {
+            return response([
+                'error'=> $err->getMessage()
+            ]);
+        }
     }
 
     public function index(){
-        return view('admin.Category.list', [
+        $categories = Category::orderbyDesc('id')->paginate(20);
+        return response ([
             'title' => 'Danh Sách Danh Mục Mới Nhất',
-            'Categorys' => $this->CategoryService->getAll()
-        ]);
-    }
-
-    public function show(Category $Category){
-        return view('admin.Category.edit', [
-            'title' => 'Chỉnh Sửa Danh Mục: ' . $Category->name,
-            'Category' => $Category,
-        ]);
+            'Categories' => $categories,
+        ], 200);
     }
 
     public function update(Category $Category, CreateFormRequest $request){
         $this->CategoryService->update($request, $Category);
 
-        return redirect('/admin/Categories/list');
+        return response([
+            'message'=>'success',
+            'Category' => $Category,
+        ], 200);
     }
 
     public function destroy(Request $request): JsonResponse{
@@ -56,11 +60,11 @@ class CategoryController extends Controller
             return response()->json([
                 'error' => false,
                 'message' => 'Xóa thành công danh mục'
-            ]);
+            ], 200);
         }
 
         return response()->json([
             'error' => true
-        ]);
+        ], 500);
     }
 }

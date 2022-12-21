@@ -6,12 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 class PasswordController extends Controller{
-    public function change_password(){
-        return view('admin.ChangePassword',[
-            'title' => 'Đổi mật khẩu'
-        ]);
-    }
 
     public function update(Request $request){
         $this->validate($request, [
@@ -33,7 +29,7 @@ class PasswordController extends Controller{
         }
 
         $user->password = bcrypt($request->new_pasword);
-        $user->save();
+        $user->Auth::save();
 
         return redirect()->back()->with("success","Đổi mật khẩu thành công");
     }
