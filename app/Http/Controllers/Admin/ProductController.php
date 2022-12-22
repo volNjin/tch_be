@@ -7,71 +7,85 @@ use App\Http\Requests\Product\ProductRequest;
 use App\Http\Services\Product\ProductAdminService;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+
 
 class ProductController extends Controller
 {
-    protected $productService;
-
-    public function __construct(ProductAdminService $productService)
-    {
-        $this->productService = $productService;
-    }
-
     public function index()
-    {
-        return view('admin.product.list', [
+    {   
+        $productList = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'thumb')
+                        ->where('active',1)
+                        ->orderby('id')
+                        ->get();
+        return response([
             'title' => 'Danh Sách Sản Phẩm',
-            'products' => $this->productService->get()
+            'products' => $productList,
         ]);
     }
 
-    public function create()
-    {
-        return view('admin.product.add', [
-            'title' => 'Thêm Sản Phẩm Mới',
-            'categorys' => $this->productService->getCategory()
-        ]);
+    public function create(Request $request){
+            if(Product::where('name',$request->name)->first()){
+                return response([
+                    'message' => 'Đã có sản phẩm này'
+                ]);
+            }
+            if($this->isValidPrice($request)){
+                $product=Product::create($request->all());
+                return response ([
+                    'message' => 'Thêm sản phẩm mới thành công',
+                    'product' => $product,
+                ], 200);
+            }   
     }
 
-
-    public function store(ProductRequest $request)
+    public function update(Request $request)
     {
-        $this->productService->insert($request);
+        $product=Product::where('id', $request->input('id'))->first();
+        $isValidPrice = $this->isValidPrice($request);
+        if ($isValidPrice === false) return false;
 
-        return redirect()->back();
-    }
-
-    public function show(Product $product)
-    {
-        return view('admin.product.edit', [
-            'title' => 'Chỉnh Sửa Sản Phẩm',
-            'product' => $product,
-            'Categorys' => $this->productService->getCategory()
-        ]);
-    }
-
-
-    public function update(Request $request, Product $product)
-    {
-        $result = $this->productService->update($request, $product);
-        if ($result) {
-            return redirect('/admin/products/list');
+        try {
+            $product->fill($request->input());
+            $product->save();
+            return response([
+                'error' => false,
+                'product'=> $product
+            ],200);
+        }catch (\Exception $err) {
+            return response([
+                'error'=> $err->getMessage()
+            ], 500);
         }
-
-        return redirect()->back();
     }
 
 
     public function destroy(Request $request)
     {
-        $result = $this->productService->delete($request);
-        if ($result) {
+        $product = Product::where('id', $request->input('id'))->first();
+        if ($product) {
+            $product->delete();
             return response()->json([
-                'error' => false,
                 'message' => 'Xóa thành công sản phẩm'
-            ]);
+            ], 200);
+        }
+        else return response()->json([ 'message' => 'Không có sản phẩm này trong dữ liệu' ]);
+    }
+
+    protected function isValidPrice($request)
+    {
+        if ($request->input('price') != 0 && $request->input('price_sale') != 0
+            && $request->input('price_sale') > $request->input('price')
+        ) {
+            Session::flash('error', 'Giá giảm phải nhỏ hơn giá gốc');
+            return false;
         }
 
-        return response()->json([ 'error' => true ]);
+        if ($request->input('price_sale') != 0 && (int)$request->input('price') == 0) {
+            Session::flash('error', 'Vui lòng nhập giá gốc');
+            return false;
+        }
+
+        return  true;
     }
 }

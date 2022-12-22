@@ -13,29 +13,23 @@ use App\Models\Admin;
 class LoginController extends Controller{
 
     public function login(Request $request){
-        try{
-            $this->validate($request, [
-                'username' => 'required',
-                'password' => 'required'
-            ]);
-            
-            $admin=Admin::where([
-                        ['username', $request->username],
-                        ['password', $request->password]
-                    ])->get();
-            if (!($admin->isEmpty()))
-            /*if(Hash::check($request->get('password'),$password))*/ {
-                return response([
-                    'message'=>'Đăng nhập thành công',
-                ],200);
-            } else return response([
-                'message'=>'Tài khoản hoặc mật khẩu không đúng',
-                ],500);
-        }catch(\Exception $exception){
+        $this->validate($request, [
+            'username' => 'required',
+            'password' => 'required'
+        ]);
+        
+        $admin=Admin::where([
+                    ['username', $request->username],
+                ])->get();
+        if (!($admin->isEmpty()))
+        if(Hash::check($request->get('password'),$admin[0]->password)) {
             return response([
-                'message' => $exception->getMessage()
-            ], 500); 
-        }
+                'error' => false,
+                'admin' => $admin
+            ],200);
+        } else return response([
+            'message'=>'Tài khoản hoặc mật khẩu không đúng',
+            ],500);
     }
 
     public function logout(){

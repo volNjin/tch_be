@@ -11,60 +11,58 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    protected $categoryService;
-
-    public function __construct(CategoryService $categoryService)
-    {
-        $this->categoryService = $categoryService;
-    }
-
     public function create(Request $request){
-        try {
+        if(Category::where('name', $request->name)->first()){
+            return response([
+                'message' => 'Đã có danh mục này'
+            ]);
+        }
             $category=Category::create([
                 'name' => (string)$request->input('name'),
                 'parent_id' => (int)$request->input('parent_id'),
-                'description' => (string)$request->input('description'),
             ]);
             
             return response([
-                'success'=> 'Tạo Danh Mục Thành Công',
+                'error' => 'Thêm danh mục thành công',
                 'category'=> $category,
             ]);
-        } catch (\Exception $err) {
-            return response([
-                'error'=> $err->getMessage()
-            ]);
-        }
     }
 
     public function index(){
         $categories = Category::orderbyDesc('id')->paginate(20);
         return response ([
-            'title' => 'Danh Sách Danh Mục Mới Nhất',
             'Categories' => $categories,
         ], 200);
     }
 
-    public function update(Category $Category, CreateFormRequest $request){
-        $this->CategoryService->update($request, $Category);
+    public function update(Request $request){
+        $category=Category::find($request->id);
+        if ($request->input('parent_id')!=NULL && $request->input('parent_id') != $category->id) {
+            $category->parent_id = (int)$request->input('parent_id');
+        }
 
+        $category->name = (string)$request->input('name');
+        $category->save();
         return response([
-            'message'=>'success',
-            'Category' => $Category,
+            'message' => 'Cập nhật thành công',
+            'Category' => $category,
         ], 200);
     }
 
     public function destroy(Request $request): JsonResponse{
-        $result = $this->CategoryService->destroy($request);
+        $id = (int)$request->input('id');
+        $Category = Category::where('id', $id)->first();
+        if ($Category) {
+            $result = Category::where('id', $id)->orWhere('parent_id', $id)->delete();
+        }
         if ($result) {
             return response()->json([
-                'error' => false,
                 'message' => 'Xóa thành công danh mục'
             ], 200);
         }
 
         return response()->json([
-            'error' => true
+            'message' => 'Xóa thành công không danh mục'
         ], 500);
     }
 }
