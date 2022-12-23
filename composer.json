@@ -9,7 +9,11 @@
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
-        "laravel/tinker": "^2.7"
+        "laravel/tinker": "^2.7",
+        "laravel/vonage-notification-channel": "^3.0",
+        "twilio/sdk": "^6.44",
+        "vonage/client": "^3.0",
+        "vonage/client-core": "^3.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

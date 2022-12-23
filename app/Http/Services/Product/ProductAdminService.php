@@ -12,7 +12,7 @@ class ProductAdminService
 {
     public function getCategory()
     {
-        return Category::where('active', 1)->get();
+        return Product::where('active', 1)->get();
     }
 
     protected function isValidPrice($request)
@@ -38,22 +38,19 @@ class ProductAdminService
         if ($isValidPrice === false) return false;
 
         try {
-            $request->except('_token');
-            Product::create($request->all());
+            $product=Product::create($request->all());
 
             Session::flash('success', 'Thêm Sản phẩm thành công');
+            return $product;
         } catch (\Exception $err) {
             Session::flash('error', 'Thêm Sản phẩm lỗi');
-            \Log::info($err->getMessage());
             return  false;
         }
-
-        return  true;
     }
 
     public function get()
     {
-        return Product::with('Category')
+        return Product::with('Category_id')
             ->orderByDesc('id')->paginate(15);
     }
 
@@ -68,7 +65,6 @@ class ProductAdminService
             Session::flash('success', 'Cập nhật thành công');
         } catch (\Exception $err) {
             Session::flash('error', 'Có lỗi vui lòng thử lại');
-            \Log::info($err->getMessage());
             return false;
         }
         return true;

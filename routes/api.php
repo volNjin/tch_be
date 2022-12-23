@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,13 +24,24 @@ use App\Http\Controllers\Admin\CategoryController;
 });*/
 Route::group(['prefix' => 'admin'], function(){
     Route::post('auth/login', [LoginController::class, 'login']);
+    
     Route::post('category/create', [CategoryController::class, 'create']);
     Route::get('category/index', [CategoryController::class, 'index']);
-    Route::get('category/update', [CategoryController::class, 'update']);
+    Route::post('category/update', [CategoryController::class, 'update']);
+    Route::post('category/delete', [CategoryController::class, 'destroy']);
+
+    Route::post('product/create', [ProductController::class, 'create']);
+    Route::get('product/index', [ProductController::class, 'index']);
+    Route::post('product/update', [ProductController::class, 'update']);
+    Route::post('product/delete', [ProductController::class, 'destroy']);
+    // Route::get('category/index', [CategoryController::class, 'index']);
+    // Route::post('category/update', [CategoryController::class, 'update']);
+    // Route::post('category/delete', [CategoryController::class, 'destroy']);
 });
 
-
-Route::post('user/auth/register', [AuthController::class, 'register']);
-Route::post('user/auth/login', [AuthController::class, 'login']);
-Route::post('user/auth/logout', [AuthController::class, 'logout']);
-Route::post('user/auth/changePassword', [AuthController::class, 'changePassword']);
+Route::group(['prefix' => 'user'], function(){
+    Route::post('auth/register', [AuthController::class, 'register']);
+    Route::post('auth/login', [AuthController::class, 'login']);
+    Route::post('auth/logout', [AuthController::class, 'logout']);
+    Route::post('auth/changePassword', [AuthController::class, 'changePassword']);
+});
