@@ -35,10 +35,13 @@ Route::group(['prefix' => 'admin'], function(){
     Route::get('product/index', [ProductController::class, 'index']);
     Route::post('product/update', [ProductController::class, 'update']);
     Route::post('product/indexByCategoryId', [ProductController::class, 'indexByCategoryId']);
+    // Route::post('product/indexByCategoryParentId', [ProductController::class, 'indexByCategoryParentId']);
 });
 
+route::group(['prefix' => 'user'], function(){
+    Route::post('auth/register', [AuthController::class, 'register']);
+    Route::post('auth/login', [AuthController::class, 'login']);
+    Route::post('auth/logout', [AuthController::class, 'logout']);
+    Route::post('auth/changePassword', [AuthController::class, 'changePassword']);
+});
 
-Route::post('user/auth/register', [AuthController::class, 'register']);
-Route::post('user/auth/login', [AuthController::class, 'login']);
-Route::post('user/auth/logout', [AuthController::class, 'logout']);
-Route::post('user/auth/changePassword', [AuthController::class, 'changePassword']);

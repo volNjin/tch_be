@@ -16,22 +16,21 @@ class ProductController extends Controller
     {   
         $productList = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'thumb')
                         ->where('active',1)
-                        ->orderby('id')
+                        ->orderbyDesc('id')
                         ->get();
         return response([
-            'title' => 'Danh Sách Sản Phẩm',
             'products' => $productList,
         ]);
     }
+
     public function indexByCategoryId(Request $request)
     {   
-        $productList = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'thumb')
+        $productList = Product::select('id', 'name', 'description', 'price', 'price_sale', 'thumb')
                         ->where('category_id', $request->category_id)    
                         ->where('active',1)
                         ->orderby('id')
                         ->get();
         return response([
-            'title' => 'Danh Sách Sản Phẩm',
             'products' => $productList,
         ]);
     }

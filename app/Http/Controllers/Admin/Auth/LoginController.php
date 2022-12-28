@@ -24,8 +24,7 @@ class LoginController extends Controller{
         if (!($admin->isEmpty()))
         if(Hash::check($request->get('password'),$admin[0]->password)) {
             return response([
-                'error' => false,
-                'admin' => $admin
+                $admin
             ],200);
         } else return response([
             'message'=>'Tài khoản hoặc mật khẩu không đúng',
