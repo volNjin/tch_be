@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('price')->nullable();
             $table->integer('price_sale')->nullable();
             $table->integer('active');
+            $table->string('image_url')->nullable();
             $table->timestamps();
         });
     }

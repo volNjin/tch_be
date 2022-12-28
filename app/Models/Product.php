@@ -16,7 +16,7 @@ class Product extends Model
         'price',
         'price_sale',
         'active',
-        'thumb'
+        'image_url'
     ];
 
     public function Category()
