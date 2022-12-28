@@ -16,7 +16,7 @@ class ProductController extends Controller
     {   
         $productList = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'thumb')
                         ->where('active',1)
-                        ->orderbyDesc('id')
+                        ->orderby('id')
                         ->get();
         return response([
             'products' => $productList,

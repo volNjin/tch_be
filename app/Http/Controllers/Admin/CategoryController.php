@@ -29,7 +29,7 @@ class CategoryController extends Controller
     }
 
     public function index(){
-        $categories = Category::orderbyDesc('id')->get();
+        $categories = Category::orderby('id')->get();
         return response ([
             'Categories' => $categories,
         ], 200);
@@ -37,7 +37,7 @@ class CategoryController extends Controller
 
     public function indexByParentId(Request $request){
         $categories = Category::where('parent_id', $request->parent_id)
-                                ->orderbyDesc('id')->get();
+                                ->orderby('id')->get();
         return response ([
             'Categories' => $categories,
         ], 200);
