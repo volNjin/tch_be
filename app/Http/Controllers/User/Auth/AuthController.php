@@ -53,8 +53,8 @@ class AuthController extends Controller{
             $message = 'Your OTP to login is: '.$otp;
             $result=$client->message()->send([
                 'to' => '84394896395',
-                'from' => 'TCH.vn', 
-                'text' => 'Your OTP to login is: '.$otp
+                'from' => '84394896395', 
+                'text' => $message
             ]);
 
             if ($result) {
