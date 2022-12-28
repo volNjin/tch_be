@@ -23,6 +23,18 @@ class ProductController extends Controller
             'products' => $productList,
         ]);
     }
+    public function indexByCategoryId(Request $request)
+    {   
+        $productList = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'thumb')
+                        ->where('category_id', $request->category_id)    
+                        ->where('active',1)
+                        ->orderby('id')
+                        ->get();
+        return response([
+            'title' => 'Danh Sách Sản Phẩm',
+            'products' => $productList,
+        ]);
+    }
 
     public function create(Request $request){
             if(Product::where('name',$request->name)->first()){

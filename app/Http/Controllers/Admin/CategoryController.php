@@ -29,12 +29,19 @@ class CategoryController extends Controller
     }
 
     public function index(){
-        $categories = Category::orderbyDesc('id')->paginate(20);
+        $categories = Category::orderbyDesc('id')->get();
         return response ([
             'Categories' => $categories,
         ], 200);
     }
 
+    public function indexByParentId(Request $request){
+        $categories = Category::where('parent_id', $request->parent_id)
+                                ->orderbyDesc('id')->get();
+        return response ([
+            'Categories' => $categories,
+        ], 200);
+    }
     public function update(Request $request){
         $category=Category::find($request->id);
         if ($request->input('parent_id')!=NULL && $request->input('parent_id') != $category->id) {

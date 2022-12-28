@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -23,9 +25,16 @@ use App\Http\Controllers\Admin\CategoryController;
 });*/
 Route::group(['prefix' => 'admin'], function(){
     Route::post('auth/login', [LoginController::class, 'login']);
+
     Route::post('category/create', [CategoryController::class, 'create']);
     Route::get('category/index', [CategoryController::class, 'index']);
-    Route::get('category/update', [CategoryController::class, 'update']);
+    Route::post('category/update', [CategoryController::class, 'update']);
+    Route::post('category/indexByParentId', [CategoryController::class, 'indexByParentId']);
+
+    Route::post('product/create', [ProductController::class, 'create']);
+    Route::get('product/index', [ProductController::class, 'index']);
+    Route::post('product/update', [ProductController::class, 'update']);
+    Route::post('product/indexByCategoryId', [ProductController::class, 'indexByCategoryId']);
 });
 
 
