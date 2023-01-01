@@ -13,11 +13,6 @@ use App\Models\Admin;
 class LoginController extends Controller{
 
     public function login(Request $request){
-        $this->validate($request, [
-            'username' => 'required',
-            'password' => 'required'
-        ]);
-        
         $admin=Admin::where([
                     ['username', $request->username],
                 ])->get();

@@ -11,12 +11,6 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller{
     public function login(Request $request){
-        try{
-            $this->validate($request, [
-                'email' =>  'required|email:filter',
-                'password'  =>  'required',
-            ]);
-
             if (Auth::attempt([
                 'email' => $request->input('email'),
                 'password' => $request->input('password')
@@ -29,21 +23,9 @@ class AuthController extends Controller{
             } else return response([
                 'message'=>'Tài khoản hoặc mật khẩu không đúng',
             ],500);
-        }catch(\Exception $exception){
-            return response([
-                'message' => $exception->getMessage()
-            ], 500); 
-        } 
     }
 
     public function register(Request $request){
-        try{
-            $this->validate($request, array(
-                'email' =>  'required|unique:users|email|max:255',
-                'name' =>  'required|alpha_dash|max:20',
-                'password' =>  'required|min:8',
-                'confirm_password' => 'required|same:password'
-            ));
 
             $user=User::create([
                 'name'=> $request->input('name'),
@@ -55,11 +37,6 @@ class AuthController extends Controller{
                 'message'=>'success',
                 'user'=>$user,
             ], 200);
-        } catch(\Exception $exception){
-            return response([
-                'message' => $exception->getMessage()
-            ], 400); 
-        }
     }
 
     public function logout(){
@@ -68,11 +45,6 @@ class AuthController extends Controller{
     }
 
     public function changePassword(Request $request){
-        $this->validate($request, [
-            'old_password'=>'required|min:8|max:100',
-            'new_password'=>'required|min:8|max:100',
-            'confirm_password'=>'required|same:new_password'
-        ]);
         $password = User::find(auth()->user()->id);
         $checked=Hash::check($request->old_password,$password->password);
         if (!$checked) {
