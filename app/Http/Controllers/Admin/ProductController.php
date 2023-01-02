@@ -14,7 +14,7 @@ class ProductController extends Controller
 {
     public function index()
     {   
-        $productList = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'thumb')
+        $productList = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
                         ->where('active',1)
                         ->orderby('id')
                         ->get();
@@ -25,7 +25,7 @@ class ProductController extends Controller
 
     public function indexByCategoryId(Request $request)
     {   
-        $productList = Product::select('id', 'name', 'description', 'price', 'price_sale', 'thumb')
+        $productList = Product::select('id', 'name', 'description', 'price', 'price_sale', 'image_url')
                         ->where('category_id', $request->category_id)    
                         ->where('active',1)
                         ->orderby('id')
