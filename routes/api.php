@@ -7,7 +7,7 @@ use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
-
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +35,11 @@ Route::group(['prefix' => 'admin'], function(){
     Route::get('product/index', [ProductController::class, 'index']);
     Route::post('product/update', [ProductController::class, 'update']);
     Route::post('product/indexByCategoryId', [ProductController::class, 'indexByCategoryId']);
-    // Route::post('product/indexByCategoryParentId', [ProductController::class, 'indexByCategoryParentId']);
+    Route::post('product/getTopping',[ProductController::class, 'getTopping']);
+
+    Route::post('order/addOrder', [OrderController::class, 'addOrder']);
+    Route::post('order/getOrders', [OrderController::class, 'getOrders']);
+    Route::post('order/getOrderItems', [OrderController::class, 'getOrderItems']);
 });
 
 route::group(['prefix' => 'user'], function(){
