@@ -5,21 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cart extends Model
+class OrderItem extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-
     protected $fillable = [
-        'customer_id',
+        'order_id',
         'product_id',
-        'pty',
+        'topping_id',
+        'size',
         'price'
     ];
 
-    public function product()
-    {
+    protected $casts = [
+        'topping_id' =>'array'
+    ];
+    
+    public function order(){
+        return $this->hasOne(Order::class, 'id', 'order_id');
+    }
+
+    public function product(){
         return $this->hasOne(Product::class, 'id', 'product_id');
     }
 }
