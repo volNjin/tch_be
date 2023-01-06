@@ -23,8 +23,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function indexByCategoryId(Request $request)
-    {   
+    public function indexByCategoryId(Request $request){   
         $productList = Product::select('id', 'name', 'description', 'price', 'price_sale', 'image_url')
                         ->where('category_id', $request->category_id)    
                         ->where('active',1)
@@ -35,27 +34,12 @@ class ProductController extends Controller
         ]);
     }
 
-    public function getTopping(Request $request){
-        try{
-            $topping_list = ToppingProduct::select('topping_id')
-                                    ->where('product_id',$request->product_id)
-                                    ->first();
-            $toppingList = collect();
-            foreach($topping_list['topping_id'] as $topping_id){
-                $topping= Topping::select('name', 'price')
-                                    ->where('id', $topping_id)
-                                    ->get();
-                $toppingList->push($topping);
-            }
-            return response([
-                'toppings' => $toppingList,
-            ]);
-        } catch(\Exception $err){
-            return response([
-                'message' => $err->getMessage()
-            ]);
-        };
+    public function getProductInfo(Request $request){
+        $product=Product::select('name', 'description', 'price', 'price_sale', 'image_url')
+                        ->find($request->product_id);
+        return response($product);
     }
+    
     public function create(Request $request){
             if(Product::where('name',$request->name)->first()){
                 return response([
