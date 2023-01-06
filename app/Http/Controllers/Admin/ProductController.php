@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Product\ProductRequest;
-use App\Http\Services\Product\ProductAdminService;
 use App\Models\Product;
+use App\Models\Topping;
+use App\Models\ToppingProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -35,6 +35,27 @@ class ProductController extends Controller
         ]);
     }
 
+    public function getTopping(Request $request){
+        try{
+            $topping_list = ToppingProduct::select('topping_id')
+                                    ->where('product_id',$request->product_id)
+                                    ->first();
+            $toppingList = collect();
+            foreach($topping_list['topping_id'] as $topping_id){
+                $topping= Topping::select('name', 'price')
+                                    ->where('id', $topping_id)
+                                    ->get();
+                $toppingList->push($topping);
+            }
+            return response([
+                'toppings' => $toppingList,
+            ]);
+        } catch(\Exception $err){
+            return response([
+                'message' => $err->getMessage()
+            ]);
+        };
+    }
     public function create(Request $request){
             if(Product::where('name',$request->name)->first()){
                 return response([
