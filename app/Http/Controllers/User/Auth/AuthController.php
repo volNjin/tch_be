@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
-use Twilio\Rest\Client;
 
 class AuthController extends Controller{
 
@@ -47,23 +46,23 @@ class AuthController extends Controller{
 
     public function sendSmsNotification($user)
     {
-        $account_sid = getenv("TWILIO_SID");
-        $auth_token = getenv("TWILIO_TOKEN");
-        $twilio_number = getenv("TWILIO_FROM");
-        $client = new Client($account_sid, $auth_token);
+            $basic  = new \Vonage\Client\Credentials\Basic(getenv('VONAGE_KEY'), getenv('VONAGE_SECRET'));
+            $client = new \Vonage\Client($basic);
         
-        $receiverNumber="0394896395";
-        $otp = $this->generate($user);
-        $message = 'Your OTP to login is: '.$otp;
+            $otp = $this->generate($user);
+            dd($otp);
+            $message = 'Your OTP to login is: '.$otp;
+            $result=$client->message()->send([
+                'to' => '+84394896395',
+                'from' => '+84394896395', 
+                'text' => $message
+            ]);
 
-        $result=$client->messages->create($receiverNumber, [
-            'from' => $twilio_number, 
-            'body' => $message]);
-        if ($result) {
-            return "The message was sent successfully\n";
-        } else {
-            return "The message failed";
-        }
+            if ($result) {
+                return "The message was sent successfully\n";
+            } else {
+                return "The message failed";
+            }
     }
 
     public function generate($user)
@@ -89,7 +88,7 @@ class AuthController extends Controller{
         // Create a New OTP
         return VerificationCode::create([
             'user_id' => $user->id,
-            'otp' => rand(000000, 999999),
+            'otp' => rand(123456, 999999),
             'expire_at' => Carbon::now()->addMinutes(3)
         ]);
     }
