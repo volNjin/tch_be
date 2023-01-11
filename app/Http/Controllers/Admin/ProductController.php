@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\CategoryController;
+
 use App\Models\Product;
-use App\Models\Topping;
+use App\Models\Category;
 use App\Models\ToppingProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -23,16 +25,47 @@ class ProductController extends Controller
         ]);
     }
 
+    public function getChild($parent){
+        $childList = Category::select('id')
+                                ->where('parent_id', $parent->id) 
+                                ->orderby('id')
+                                ->get();
+        return $childList;
+    }
+
     public function indexByCategoryId(Request $request){   
-        $productList = Product::select('id', 'name', 'description', 'price', 'price_sale', 'image_url')
-                        ->where('category_id', $request->category_id)    
+        $categoryList = collect();
+        $childList = collect();
+        $productList = collect();
+
+        $categoryList = Category::select('id')
+                                ->where('id', $request->category_id)
+                                ->orwhere('parent_id',$request->category_id)
+                                ->get();
+        foreach($categoryList as $parent){
+            $childList = $this->getChild($parent);
+            foreach($childList as $child){
+                if(!($categoryList->contains($child)))
+                $categoryList->push($child);
+            }        
+        }
+        return $categoryList;
+        foreach($categoryList as $category){
+            $product_list=Product::select('id', 'name', 'description', 'price', 'price_sale', 'image_url')
+                        ->where('category_id', $category->id)    
                         ->where('active',1)
                         ->orderby('id')
                         ->get();
+            foreach($product_list as $product){
+                $productList->push($product);
+            }
+        }
         return response([
             'products' => $productList,
         ]);
     }
+
+    
 
     public function getProductInfo(Request $request){
         $product=Product::select('name', 'description', 'price', 'price_sale', 'image_url')
