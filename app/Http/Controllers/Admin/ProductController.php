@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ToppingController;
 
 use App\Models\Product;
 use App\Models\Category;
@@ -40,16 +40,14 @@ class ProductController extends Controller
 
         $categoryList = Category::select('id')
                                 ->where('id', $request->category_id)
-                                ->orwhere('parent_id',$request->category_id)
                                 ->get();
-        foreach($categoryList as $parent){
-            $childList = $this->getChild($parent);
+        for($i=0; $i<$categoryList->count();$i++){
+            $childList = $this->getChild($categoryList[$i]);
             foreach($childList as $child){
                 if(!($categoryList->contains($child)))
                 $categoryList->push($child);
             }        
         }
-        return $categoryList;
         foreach($categoryList as $category){
             $product_list=Product::select('id', 'name', 'description', 'price', 'price_sale', 'image_url')
                         ->where('category_id', $category->id)    
@@ -68,9 +66,23 @@ class ProductController extends Controller
     
 
     public function getProductInfo(Request $request){
-        $product=Product::select('name', 'description', 'price', 'price_sale', 'image_url')
+        $productInfo=Product::select('name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
                         ->find($request->product_id);
-        return response($product);
+
+        $toppingList=ToppingController::getToppingInfo($request);
+
+        $toppings=$toppingList->getOriginalContent()['toppings'];
+
+        $sameCategory = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
+                                ->where('category_id', $productInfo->category_id)
+                                ->where('id', "<>", $request->product_id)
+                                ->get();
+
+        return response([
+            'product' => $productInfo,
+            'toppings' => $toppings,
+            'same' => $sameCategory
+        ]);
     }
     
     public function create(Request $request){
