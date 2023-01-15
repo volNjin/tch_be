@@ -9,11 +9,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
 class ToppingController extends Controller{
-    public function getToppingInfo(Request $request){
+    public static function getTopping($topping_list){
+        $toppingList = collect();
+        foreach($topping_list['topping_id'] as $topping_id){
+            $topping= Topping::select('name', 'price')
+                                ->find($topping_id);
+            $toppingList->push($topping);
+        }
+        return $toppingList;
+    }
+
+    public static function getToppingInfo(Request $request){
         try{
             $topping_list = ToppingProduct::select('topping_id')
                                     ->find($request->product_id);
-            $toppingList = $this->getTopping($topping_list);
+            $toppingList = ToppingController::getTopping($topping_list);
             return response([
                 'toppings' => $toppingList,
             ]);
@@ -24,13 +34,5 @@ class ToppingController extends Controller{
         };
     }
 
-    public function getTopping($topping_list){
-        $toppingList = collect();
-        foreach($topping_list['topping_id'] as $topping_id){
-            $topping= Topping::select('name', 'price')
-                                ->find($topping_id);
-            $toppingList->push($topping);
-        }
-        return $toppingList;
-    }
+    
 }
