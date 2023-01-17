@@ -50,6 +50,7 @@ class OrderController extends Controller
         $orderItems = OrderItem::where('order_id', $request->order_id)
                                 ->orderby('id')
                                 ->get();
+        
         return response([
             'orderItems' => $orderItems
         ]);
