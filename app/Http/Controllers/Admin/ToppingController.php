@@ -12,7 +12,7 @@ class ToppingController extends Controller{
     public static function getTopping($topping_list){
         $toppingList = collect();
         foreach($topping_list['topping_id'] as $topping_id){
-            $topping= Topping::select('name', 'price')
+            $topping= Topping::select('id', 'name', 'price')
                                 ->find($topping_id);
             $toppingList->push($topping);
         }
