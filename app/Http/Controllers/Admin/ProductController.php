@@ -66,7 +66,7 @@ class ProductController extends Controller
     
 
     public function getProductInfo(Request $request){
-        $productInfo=Product::select('name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
+        $productInfo=Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
                         ->find($request->product_id);
 
         $toppingList=ToppingController::getToppingInfo($request);
