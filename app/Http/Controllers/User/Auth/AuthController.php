@@ -31,14 +31,19 @@ class AuthController extends Controller{
         $user=User::where('mobile_no', $request->mobile_no)->first();
         if($user) {
             $sendOtp = $this->sendSmsNotification($user);
-            return response([
-                'message'=>'Đăng nhập thành công',
-                'user'=>$user,
+
+            if($sendOtp) return response([
+                'error' => false
             ], 200);
-            } else return response([
-                'message'=>'Số điện thoại chưa được đăng ký',
-            ],500);
+            else return response([
+                'error' => true
+            ], 500);
+        } else return response([
+            'message'=>'Số điện thoại chưa được đăng ký',
+        ],500);
     }
+
+    
 
     public function logout(){
         Auth::logout();
@@ -49,21 +54,16 @@ class AuthController extends Controller{
     {
         $account_sid = getenv("TWILIO_SID");
         $auth_token = getenv("TWILIO_TOKEN");
-        $twilio_number = getenv("TWILIO_FROM");
-        $client = new Client($account_sid, $auth_token);
-        
-        $receiverNumber="0394896395";
+        $twilio_number =getenv("TWILIO_FROM");
+        $client = new Client($account_sid, $auth_token);        
+        $receiverNumber=$user->mobile_no;
         $otp = $this->generate($user);
         $message = 'Your OTP to login is: '.$otp;
 
         $result=$client->messages->create($receiverNumber, [
             'from' => $twilio_number, 
             'body' => $message]);
-        if ($result) {
-            return "The message was sent successfully\n";
-        } else {
-            return "The message failed";
-        }
+        return $result;
     }
 
     public function generate($user)
