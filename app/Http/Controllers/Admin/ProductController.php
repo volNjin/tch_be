@@ -66,10 +66,11 @@ class ProductController extends Controller
     
 
     public function getProductInfo(Request $request){
-        $productInfo=Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
+        $productInfo=Product::select('id', 
+        'name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
                         ->find($request->product_id);
 
-        $toppingList=ToppingController::getToppingInfo($request);
+        $toppingList=$this->getToppingInfo($request->product_id);
 
         $toppings=$toppingList->getOriginalContent()['toppings'];
 
@@ -85,6 +86,20 @@ class ProductController extends Controller
         ]);
     }
     
+    public function getToppingInfo($product_id){
+        try{
+            $topping_list = ToppingProduct::select('topping_id')
+                                    ->find($product_id);
+            $toppingList= ToppingController::getTopping($topping_list->topping_id);
+            return response([
+                'toppings' => $toppingList,
+            ]);
+        } catch(\Exception $err){
+            return response([
+                'message' => $err->getMessage()
+            ]);
+        };
+    }
     public function create(Request $request){
             if(Product::where('name',$request->name)->first()){
                 return response([
