@@ -17,6 +17,7 @@ class Order extends Model
         'state',
         'address',
         'note',
+        'total_price',
         'shipcost',
         'payment_method',
     ];
