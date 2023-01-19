@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('state');
             $table->string('address');
             $table->text('note')->nullable();
+            $table->integer('total_price');
             $table->string('shipcost');
             $table->string('payment_method');
             $table->date('order_date');
