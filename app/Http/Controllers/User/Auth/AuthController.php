@@ -4,8 +4,11 @@ namespace App\Http\Controllers\User\Auth;
 
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
+
 use App\Models\User;
+use App\Models\AddressNote;
 use App\Models\VerificationCode;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -21,6 +24,12 @@ class AuthController extends Controller{
             ], 500);
         }
         $user=User::create($request->all());
+        AddressNote::create([
+            'user_id' => $user->user_id,
+            'user_name' => $user->user_name,
+            'address' => $user->address,
+            'mobile_no' => $user->mobile_no,
+        ]);
         return response([
             'message'=>'Đăng ký thành công',
             'user'=>$user,
@@ -33,21 +42,35 @@ class AuthController extends Controller{
             $sendOtp = $this->sendSmsNotification($user);
 
             if($sendOtp) return response([
-                'error' => false
+                'error' => false,
             ], 200);
             else return response([
-                'error' => true
+                'error' => true,
             ], 500);
         } else return response([
             'message'=>'Số điện thoại chưa được đăng ký',
         ],500);
     }
 
-    
-
     public function logout(){
         Auth::logout();
         return response()->json(['message' => 'Đã đăng xuất']);
+    }
+
+    public function checkOtp(Request $request){
+        $user=User::where('mobile_no', $request->mobile_no)->first();
+        $verificationCode = VerificationCode::where('user_id', $user->id)->latest()->first();
+
+        $now = Carbon::now();
+
+        if(strcmp($verificationCode, $request->otp) && $now->isBefore($verificationCode->expire_at)){
+            return response([
+                'userInfo' => $user,
+            ]);
+        }
+        else return response([
+            'userInfo' => NULL,
+        ]);
     }
 
     public function sendSmsNotification($user)
