@@ -17,7 +17,9 @@ return new class extends Migration
             $table->id();
             $table->integer('order_id');
             $table->integer('product_id');
+            $table->integer('product_count');
             $table->json('topping_id')->nullable();
+            $table->json('topping_count')->nullable();
             $table->string('size');
             $table->integer('price');
             $table->timestamps();
