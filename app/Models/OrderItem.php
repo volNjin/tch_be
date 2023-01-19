@@ -12,13 +12,16 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'product_count',
         'topping_id',
+        'topping_count',
         'size',
         'price'
     ];
 
     protected $casts = [
-        'topping_id' =>'array'
+        'topping_id' => 'array',
+        'topping_count' => 'array'
     ];
     
     public function order(){
