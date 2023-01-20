@@ -26,7 +26,6 @@ use App\Http\Controllers\User\AddressNoteController;
     return $request->user();
 });*/
 Route::group(['prefix' => 'admin'], function(){
-    Route::post('auth/login', [LoginController::class, 'login']);
 
     Route::post('category/create', [CategoryController::class, 'create']);
     Route::get('category/index', [CategoryController::class, 'index']);
