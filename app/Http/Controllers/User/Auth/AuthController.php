@@ -11,8 +11,7 @@ use App\Models\VerificationCode;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Twilio\Rest\Client;
 
 class AuthController extends Controller{
@@ -38,18 +37,22 @@ class AuthController extends Controller{
 
     public function login(Request $request){
         $user=User::where('mobile_no', $request->mobile_no)->first();
-        if($user) {
-            $sendOtp = $this->sendSmsNotification($user);
+        if(!$user) {
+            $user=User::create([
+                'last_name' => 'Guest',
+                'mobile_no' => $request->mobile_no,
+                'birth' => DB::raw('CURRENT_TIMESTAMP'),
+            ]);   
+        } 
 
-            if($sendOtp) return response([
-                'error' => false,
-            ], 200);
-            else return response([
-                'error' => true,
-            ], 500);
-        } else return response([
-            'message'=>'Số điện thoại chưa được đăng ký',
-        ],500);
+        $sendOtp = $this->sendSmsNotification($user);
+
+        if($sendOtp) return response([
+            'error' => false,
+        ], 200);
+        else return response([
+            'error' => true,
+        ], 500);
     }
 
     public function logout(){
