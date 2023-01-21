@@ -4,12 +4,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\User\Auth\AuthController;
-use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ToppingController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\User\AddressNoteController;
+use App\Http\Controllers\User\UpdateInfo;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +51,7 @@ route::group(['prefix' => 'user'], function(){
     Route::post('auth/login', [AuthController::class, 'login']);
     Route::post('auth/checkOtp', [AuthController::class, 'checkOtp']);
     Route::post('auth/logout', [AuthController::class, 'logout']);
-    Route::post('auth/changePassword', [AuthController::class, 'changePassword']);
+    Route::post('info/updateInfo', [UpdateInfo::class, 'update']);
 
     Route::post('info/getAddressNote', [AddressNoteController::class, 'getAddressNote']);
 });
