@@ -8,6 +8,8 @@ use App\Models\OrderItem;
 use App\Models\AddressNote;
 use App\Http\Controllers\Admin\ToppingController;
 
+use Carbon\Carbon;
+
 class OrderController extends Controller
 {
     public function addOrder(Request $request){
@@ -16,7 +18,7 @@ class OrderController extends Controller
                 'user_id' => (int)$request->user_id,
                 'user_name' => $request->user_name,
                 'mobile_no' => $request->mobile_no,
-                'order_date' => $request->order_date,
+                'order_date' => Carbon::now(),
                 'state' => '0',
                 'address' => $request->address,
                 'note' => $request->note,
