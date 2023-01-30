@@ -26,6 +26,8 @@ class OrderController extends Controller
                 'total_price' => $request->total_price,
                 'payment_method' => $request->payment_method,
             ]);
+            $order->order_id="TCH".time()."".$order->id;
+            $order->save();
             if(!AddressNote::where('user_id', $request->user_id)
                             ->where('address', $request->address)
                             ->exists()){
@@ -38,7 +40,7 @@ class OrderController extends Controller
             }
             foreach($request->products as $product){
                 OrderItem::create([
-                    'order_id' => $order->id,
+                    'order_id' => $order->order_id,
                     'product_id' => $product['product_id'],
                     'product_count' => $product['product_count'],
                     'topping_id' => $product['topping_id'],
@@ -48,12 +50,14 @@ class OrderController extends Controller
                 ]);
             }
             return response([
-                'error' => false
+                'error' => false,
+                'order_id' => $order->order_id,
             ]);
         }catch(\Exception $err){
             return response([
                 'error' => true,
-                'message' => $err->getMessage()
+                'message' => $err->getMessage(),
+                'order_id' => NULL,
             ]);
         };
     }
