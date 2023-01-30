@@ -8,9 +8,9 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ToppingController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\User\AddressNoteController;
 use App\Http\Controllers\User\UpdateInfo;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -55,4 +55,7 @@ route::group(['prefix' => 'user'], function(){
 
     Route::post('info/getAddressNote', [AddressNoteController::class, 'getAddressNote']);
 });
-
+route::group(['prefix' => 'payment'], function(){
+    Route::post('vnpay', [PaymentController::class, 'vnpay_payment']);
+    Route::post('momo', [PaymentController::class, 'momo_payment']);
+});
