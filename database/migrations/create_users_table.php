@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('birth')->nullable();
             $table->string('mobile_no');
             $table->string('email')->nullable()->default("");
+            $table->text('address')->nullable()->default("");
             $table->timestamps();
         });
     }
