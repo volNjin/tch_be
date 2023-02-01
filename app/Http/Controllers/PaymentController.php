@@ -73,7 +73,7 @@ class PaymentController extends Controller
             // } else {
             //     echo json_encode($returnData);
             // }
-        return redirect()->to($vnp_Url);
+        return $vnp_Url;
     }
 
     function execPostRequest($url, $data){
@@ -133,7 +133,7 @@ class PaymentController extends Controller
 
         //Just a example, please check more in there
 
-        return redirect()->to($jsonResult['payUrl']);
+        return $jsonResult['payUrl'];
     }
 
     public function zalopay_payment(Request $request){
@@ -179,8 +179,6 @@ class PaymentController extends Controller
         $resp = file_get_contents($config["endpoint"], false, $context);
         $result = json_decode($resp, true);
 
-        foreach ($result as $key => $value) {
-            echo "$key: $value<br>";
-        }
+        return $result["orderurl"];
     }
 }
