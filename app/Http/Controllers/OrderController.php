@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\OrderItem;
 use App\Models\AddressNote;
 use App\Http\Controllers\Admin\ToppingController;
@@ -79,21 +80,24 @@ class OrderController extends Controller
         $orders = Order::where('user_id', $request->user_id)
                         ->orderby('id')
                         ->get();
+        $productsOfOrder = collect();
+        foreach($orders as $order){
+            $productsOfOrder->push($this->getOrderItems($order->order_id));
+        }
         return response([
-            'orders' => $orders
+            'orders' => $orders,
+            'productsOfOrder' => $productsOfOrder,
         ]);
     }
 
-    public function getOrderItems(Request $request){
-        $orderItems = OrderItem::where('order_id', $request->order_id)
+    public function getOrderItems($order_id){
+        $orderItems = OrderItem::where('order_id', $order_id)
                                 ->orderby('id')
                                 ->get();
-        
         foreach($orderItems as $item){
+            $item->product_id=Product::select("name")->where("id",$item->product_id)->first();
             $item->topping_id=ToppingController::getTopping($item->topping_id);
         }                     
-        return response([
-            'orderItems' => $orderItems
-        ]);
+        return $orderItems;
     }
 }
