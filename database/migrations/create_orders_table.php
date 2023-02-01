@@ -19,12 +19,12 @@ return new class extends Migration
             $table->integer('user_id');
             $table->string('user_name');
             $table->string('mobile_no');
-            $table->integer('state');
+            $table->integer('state')->nullable()->default(0);
             $table->string('address');
             $table->text('note')->nullable();
             $table->integer('total_price');
             $table->string('shipcost');
-            $table->string('payment_method');
+            $table->string('payment_method')->nullable()->default("");
             $table->date('order_date');
             $table->timestamps();
         });
