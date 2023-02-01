@@ -44,6 +44,8 @@ Route::group(['prefix' => 'admin'], function(){
     Route::post('order/addOrder', [OrderController::class, 'addOrder']);
     Route::post('order/getOrders', [OrderController::class, 'getOrders']);
     Route::post('order/getOrderItems', [OrderController::class, 'getOrderItems']);
+    Route::post('order/paidOrder', [OrderController::class, 'paidOrder']);
+    Route::post('order/cancelOrder', [OrderController::class, 'cancelOrder']);
 });
 
 route::group(['prefix' => 'user'], function(){
@@ -58,4 +60,5 @@ route::group(['prefix' => 'user'], function(){
 route::group(['prefix' => 'payment'], function(){
     Route::post('vnpay', [PaymentController::class, 'vnpay_payment']);
     Route::post('momo', [PaymentController::class, 'momo_payment']);
+    Route::post('zalopay', [PaymentController::class, 'zalopay_payment']);
 });

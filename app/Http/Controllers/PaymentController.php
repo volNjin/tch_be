@@ -73,7 +73,7 @@ class PaymentController extends Controller
             // } else {
             //     echo json_encode($returnData);
             // }
-        return $returnData;
+        return redirect()->to($vnp_Url);
     }
 
     function execPostRequest($url, $data){
@@ -113,7 +113,8 @@ class PaymentController extends Controller
         //before sign HMAC SHA256 signature
         $rawHash = "accessKey=" . $accessKey . "&amount=" . $amount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
         $signature = hash_hmac("sha256", $rawHash, $secretKey);
-        $data = array('partnerCode' => $partnerCode,
+        $data = array(
+            'partnerCode' => $partnerCode,
             'partnerName' => "Test",
             "storeId" => "MomoTestStore",
             'requestId' => $requestId,
@@ -125,12 +126,61 @@ class PaymentController extends Controller
             'lang' => 'vi',
             'extraData' => $extraData,
             'requestType' => $requestType,
-            'signature' => $signature);
+            'signature' => $signature
+        );
         $result = $this->execPostRequest($endpoint, json_encode($data));
         $jsonResult = json_decode($result, true);  // decode json
 
         //Just a example, please check more in there
 
-        return $jsonResult['payUrl'];
+        return redirect()->to($jsonResult['payUrl']);
+    }
+
+    public function zalopay_payment(Request $request){
+
+        $config = [
+        "appid" => 553,
+        "key1" => "9phuAOYhan4urywHTh0ndEXiV3pKHr5Q",
+        "key2" => "Iyz2habzyr7AG8SgvoBCbKwKi3UzlLi3",
+        "endpoint" => "https://sandbox.zalopay.com.vn/v001/tpe/createorder"
+        ];
+
+        $embeddata = [
+        "merchantinfo" => "embeddata123"
+        ];
+        $items = [
+        [ "itemid" => $request->order_id]
+        ];
+        $order = [
+        "appid" => $config["appid"],
+        "apptime" => round(microtime(true) * 1000), // miliseconds
+        "apptransid" => date("ymd")."_".uniqid(), // mã giao dich có định dạng yyMMdd_xxxx
+        "appuser" => "demo",
+        "item" => json_encode($items, JSON_UNESCAPED_UNICODE),
+        "embeddata" => json_encode($embeddata, JSON_UNESCAPED_UNICODE),
+        "amount" => $request->total_price,
+        "description" => "Thanh toan hoa don online",
+        "bankcode" => "zalopayapp"
+        ];
+
+        // appid|apptransid|appuser|amount|apptime|embeddata|item
+        $data = $order["appid"]."|".$order["apptransid"]."|".$order["appuser"]."|".$order["amount"]
+        ."|".$order["apptime"]."|".$order["embeddata"]."|".$order["item"];
+        $order["mac"] = hash_hmac("sha256", $data, $config["key1"]);
+
+        $context = stream_context_create([
+        "http" => [
+            "header" => "Content-type: application/x-www-form-urlencoded\r\n",
+            "method" => "POST",
+            "content" => http_build_query($order)
+        ]
+        ]);
+
+        $resp = file_get_contents($config["endpoint"], false, $context);
+        $result = json_decode($resp, true);
+
+        foreach ($result as $key => $value) {
+            echo "$key: $value<br>";
+        }
     }
 }
