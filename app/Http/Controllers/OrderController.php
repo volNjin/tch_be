@@ -23,6 +23,7 @@ class OrderController extends Controller
                 'note' => $request->note,
                 'shipcost' => '15000',
                 'total_price' => $request->total_price,
+                'payment_method' => $request->payment_method
             ]);
             $order->order_id="TCH".time()."".$order->id;
             $order->save();
@@ -63,7 +64,6 @@ class OrderController extends Controller
     public function paidOrder(Request $request){
         $order=Order::where('order_id',$request->order_id)->first();
         $order->state=1;
-        $order->payment_method="".$request->payment_method;
         $order->save();
         return $order;
     }
@@ -74,6 +74,7 @@ class OrderController extends Controller
         $order->save();
         return $order;
     }
+
     public function getOrders(Request $request){
         $orders = Order::where('user_id', $request->user_id)
                         ->orderby('id')
