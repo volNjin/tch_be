@@ -19,12 +19,10 @@ class OrderController extends Controller
                 'user_name' => $request->user_name,
                 'mobile_no' => $request->mobile_no,
                 'order_date' => Carbon::now(),
-                'state' => '0',
                 'address' => $request->address,
                 'note' => $request->note,
                 'shipcost' => '15000',
                 'total_price' => $request->total_price,
-                'payment_method' => $request->payment_method,
             ]);
             $order->order_id="TCH".time()."".$order->id;
             $order->save();
@@ -62,6 +60,20 @@ class OrderController extends Controller
         };
     }
 
+    public function paidOrder(Request $request){
+        $order=Order::where('order_id',$request->order_id)->first();
+        $order->state=1;
+        $order->payment_method="".$request->payment_method;
+        $order->save();
+        return $order;
+    }
+
+    public function cancelOrder(Request $request){
+        $order=Order::where('order_id',$request->order_id)->first();
+        $order->state=-1;
+        $order->save();
+        return $order;
+    }
     public function getOrders(Request $request){
         $orders = Order::where('user_id', $request->user_id)
                         ->orderby('id')
