@@ -25,7 +25,7 @@ return new class extends Migration
             $table->integer('total_price');
             $table->string('shipcost');
             $table->string('payment_method')->nullable()->default("");
-            $table->date('order_date');
+            $table->datetime('order_time');
             $table->timestamps();
         });
     }

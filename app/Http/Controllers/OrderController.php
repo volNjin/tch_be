@@ -18,7 +18,7 @@ class OrderController extends Controller
                 'user_id' => (int)$request->user_id,
                 'user_name' => $request->user_name,
                 'mobile_no' => $request->mobile_no,
-                'order_date' => Carbon::now(),
+                'order_time' => Carbon::now(),
                 'address' => $request->address,
                 'note' => $request->note,
                 'shipcost' => '15000',

@@ -14,7 +14,7 @@ class Order extends Model
         'user_id',
         'user_name',
         'mobile_no',
-        'order_date',
+        'order_time',
         'state',
         'address',
         'note',
