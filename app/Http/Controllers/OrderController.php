@@ -24,7 +24,8 @@ class OrderController extends Controller
                 'note' => $request->note,
                 'shipcost' => '15000',
                 'total_price' => $request->total_price,
-                'payment_method' => $request->payment_method
+                'payment_method' => $request->payment_method,
+                'state' => 0
             ]);
             $order->order_id="TCH".time()."".$order->id;
             $order->save();
@@ -62,7 +63,7 @@ class OrderController extends Controller
         };
     }
 
-    public function paidOrder(Request $request){
+    public function acceptOrder(Request $request){
         $order=Order::where('order_id',$request->order_id)->first();
         $order->state=1;
         $order->save();
@@ -78,6 +79,36 @@ class OrderController extends Controller
 
     public function getOrders(Request $request){
         $orders = Order::where('user_id', $request->user_id)
+                        ->orderby('id')
+                        ->get();
+        $productsOfOrder = collect();
+        foreach($orders as $order){
+            $productsOfOrder->push($this->getOrderItems($order->order_id));
+        }
+        return response([
+            'orders' => $orders,
+            'productsOfOrder' => $productsOfOrder,
+        ]);
+    }
+
+    public function getSuccessOrders(Request $request){
+        $orders = Order::where('user_id', $request->user_id)
+                        ->where('state', 1)
+                        ->orderby('id')
+                        ->get();
+        $productsOfOrder = collect();
+        foreach($orders as $order){
+            $productsOfOrder->push($this->getOrderItems($order->order_id));
+        }
+        return response([
+            'orders' => $orders,
+            'productsOfOrder' => $productsOfOrder,
+        ]);
+    }
+
+    public function getUnsuccessOrders(Request $request){
+        $orders = Order::where('user_id', $request->user_id)
+                        ->where('state', -1)
                         ->orderby('id')
                         ->get();
         $productsOfOrder = collect();
