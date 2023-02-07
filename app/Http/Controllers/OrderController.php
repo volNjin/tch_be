@@ -106,7 +106,7 @@ class OrderController extends Controller
     }
 
     public function getUnsuccessOrders(){
-        $orders = Order::where('state', -1)
+        $orders = Order::where('state', 0)
                         ->orderby('id')
                         ->get();
         $productsOfOrder = collect();
