@@ -43,8 +43,8 @@ Route::group(['prefix' => 'admin'], function(){
 
     Route::post('order/addOrder', [OrderController::class, 'addOrder']);
     Route::post('order/getOrders', [OrderController::class, 'getOrders']);
-    Route::post('order/getUnsuccessOrders', [OrderController::class, 'getUnsuccessOrders']);
-    Route::post('order/getSuccessOrders', [OrderController::class, 'getSuccessOrders']);
+    Route::get('order/getUnsuccessOrders', [OrderController::class, 'getUnsuccessOrders']);
+    Route::get('order/getSuccessOrders', [OrderController::class, 'getSuccessOrders']);
     Route::post('order/getOrderItems', [OrderController::class, 'getOrderItems']);
     Route::post('order/acceptOrder', [OrderController::class, 'acceptOrder']);
     Route::post('order/cancelOrder', [OrderController::class, 'cancelOrder']);
