@@ -36,6 +36,7 @@ Route::group(['prefix' => 'admin'], function(){
     Route::post('product/create', [ProductController::class, 'create']);
     Route::get('product/index', [ProductController::class, 'index']);
     Route::post('product/update', [ProductController::class, 'update']);
+    Route::post('product/destroy', [ProductController::class, 'destroy']);
     Route::post('product/indexByCategoryId', [ProductController::class, 'indexByCategoryId']);
     Route::post('product/getProductInfo',[ProductController::class, 'getProductInfo']);
     
@@ -46,6 +47,7 @@ Route::group(['prefix' => 'admin'], function(){
     Route::get('order/getUnsuccessOrders', [OrderController::class, 'getUnsuccessOrders']);
     Route::get('order/getSuccessOrders', [OrderController::class, 'getSuccessOrders']);
     Route::post('order/getOrderItems', [OrderController::class, 'getOrderItems']);
+    Route::post('order/getOrderInfo', [OrderController::class, 'getOrderInfo']);
     Route::post('order/acceptOrder', [OrderController::class, 'acceptOrder']);
     Route::post('order/cancelOrder', [OrderController::class, 'cancelOrder']);
 });
