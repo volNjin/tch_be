@@ -91,9 +91,8 @@ class OrderController extends Controller
         ]);
     }
 
-    public function getSuccessOrders(Request $request){
-        $orders = Order::where('user_id', $request->user_id)
-                        ->where('state', 1)
+    public function getSuccessOrders(){
+        $orders = Order::where('state', 1)
                         ->orderby('id')
                         ->get();
         $productsOfOrder = collect();
@@ -106,9 +105,8 @@ class OrderController extends Controller
         ]);
     }
 
-    public function getUnsuccessOrders(Request $request){
-        $orders = Order::where('user_id', $request->user_id)
-                        ->where('state', -1)
+    public function getUnsuccessOrders(){
+        $orders = Order::where('state', -1)
                         ->orderby('id')
                         ->get();
         $productsOfOrder = collect();
