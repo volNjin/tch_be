@@ -15,46 +15,48 @@ use Illuminate\Support\Facades\DB;
 class ProductController extends Controller
 {
     public function index()
-    {   
+    {
         $productList = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
-                        ->where('active',1)
-                        ->orderby('id')
-                        ->get();
+            ->where('active', 1)
+            ->orderby('id')
+            ->get();
         return response([
             'products' => $productList,
         ]);
     }
 
-    public function getChild($parent){
+    public function getChild($parent)
+    {
         $childList = Category::select('id')
-                                ->where('parent_id', $parent->id) 
-                                ->orderby('id')
-                                ->get();
+            ->where('parent_id', $parent->id)
+            ->orderby('id')
+            ->get();
         return $childList;
     }
 
-    public function indexByCategoryId(Request $request){   
+    public function indexByCategoryId(Request $request)
+    {
         $categoryList = collect();
         $childList = collect();
         $productList = collect();
 
         $categoryList = Category::select('id')
-                                ->where('id', $request->category_id)
-                                ->get();
-        for($i=0; $i<$categoryList->count();$i++){
+            ->where('id', $request->category_id)
+            ->get();
+        for ($i = 0; $i < $categoryList->count(); $i++) {
             $childList = $this->getChild($categoryList[$i]);
-            foreach($childList as $child){
-                if(!($categoryList->contains($child)))
-                $categoryList->push($child);
-            }        
+            foreach ($childList as $child) {
+                if (!($categoryList->contains($child)))
+                    $categoryList->push($child);
+            }
         }
-        foreach($categoryList as $category){
-            $product_list=Product::select('id', 'name', 'description', 'price', 'price_sale', 'image_url')
-                        ->where('category_id', $category->id)    
-                        ->where('active',1)
-                        ->orderby('id')
-                        ->get();
-            foreach($product_list as $product){
+        foreach ($categoryList as $category) {
+            $product_list = Product::select('id', 'name', 'description', 'price', 'price_sale', 'image_url')
+                ->where('category_id', $category->id)
+                ->where('active', 1)
+                ->orderby('id')
+                ->get();
+            foreach ($product_list as $product) {
                 $productList->push($product);
             }
         }
@@ -63,21 +65,29 @@ class ProductController extends Controller
         ]);
     }
 
-    
 
-    public function getProductInfo(Request $request){
-        $productInfo=Product::select('id', 
-        'name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
-                        ->find($request->product_id);
 
-        $toppingList=$this->getToppingInfo($request->product_id);
+    public function getProductInfo(Request $request)
+    {
+        $productInfo = Product::select(
+            'id',
+            'name',
+            'category_id',
+            'description',
+            'price',
+            'price_sale',
+            'image_url'
+        )
+            ->find($request->product_id);
 
-        $toppings=$toppingList->getOriginalContent()['toppings'];
+        $toppingList = $this->getToppingInfo($request->product_id);
+
+        $toppings = $toppingList->getOriginalContent()['toppings'];
 
         $sameCategory = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
-                                ->where('category_id', $productInfo->category_id)
-                                ->where('id', "<>", $request->product_id)
-                                ->get();
+            ->where('category_id', $productInfo->category_id)
+            ->where('id', "<>", $request->product_id)
+            ->get();
 
         return response([
             'product' => $productInfo,
@@ -85,39 +95,45 @@ class ProductController extends Controller
             'same' => $sameCategory
         ]);
     }
-    
-    public function getToppingInfo($product_id){
-        try{
+
+    public function getToppingInfo($product_id)
+    {
+        try {
             $topping_list = ToppingProduct::select('topping_id')
-                                    ->find($product_id);
-            $toppingList= ToppingController::getTopping($topping_list->topping_id);
+                ->find($product_id);
+            $toppingList = ToppingController::getTopping($topping_list->topping_id);
             return response([
                 'toppings' => $toppingList,
             ]);
-        } catch(\Exception $err){
+        } catch (\Exception $err) {
             return response([
                 'message' => $err->getMessage()
             ]);
         };
     }
-    public function create(Request $request){
-            if(Product::where('name',$request->name)->first()){
-                return response([
-                    'message' => 'Đã có sản phẩm này'
-                ]);
-            }
-            if($this->isValidPrice($request)){
-                $product=Product::create($request->all());
-                return response ([
-                    'message' => 'Thêm sản phẩm mới thành công',
-                    'product' => $product,
-                ], 200);
-            }   
+    public function create(Request $request)
+    {
+        if (Product::where('name', $request->name)->first()) {
+            return response([
+                'message' => 'Đã có sản phẩm này'
+            ]);
+        }
+        try {
+            $product = Product::create($request->all());
+            return response([
+                'message' => "Thêm sản phẩm thành công",
+                'product' => $product,
+            ], 200);
+        } catch (\Exception $err) {
+            return response([
+                'message' => 'Thêm sản phẩm không thành công'
+            ], 500);
+        }
     }
 
     public function update(Request $request)
     {
-        $product=Product::where('id', $request->input('id'))->first();
+        $product = Product::where('id', $request->input('id'))->first();
         $isValidPrice = $this->isValidPrice($request);
         if ($isValidPrice === false) return false;
 
@@ -125,12 +141,12 @@ class ProductController extends Controller
             $product->fill($request->input());
             $product->save();
             return response([
-                'error' => false,
-                'product'=> $product
-            ],200);
-        }catch (\Exception $err) {
+                'message' => 'Cập nhật thành công',
+                'product' => $product
+            ], 200);
+        } catch (\Exception $err) {
             return response([
-                'error'=> $err->getMessage()
+                'error' => $err->getMessage()
             ], 500);
         }
     }
@@ -144,13 +160,15 @@ class ProductController extends Controller
             return response()->json([
                 'message' => 'Xóa thành công sản phẩm'
             ], 200);
-        }
-        else return response()->json([ 'message' => 'Không có sản phẩm này trong dữ liệu' ]);
+        } else return response([
+            'message' => 'Không có sản phẩm này trong dữ liệu'
+        ], 500);
     }
 
     protected function isValidPrice($request)
     {
-        if ($request->input('price') != 0 && $request->input('price_sale') != 0
+        if (
+            $request->input('price') != 0 && $request->input('price_sale') != 0
             && $request->input('price_sale') > $request->input('price')
         ) {
             Session::flash('error', 'Giá giảm phải nhỏ hơn giá gốc');

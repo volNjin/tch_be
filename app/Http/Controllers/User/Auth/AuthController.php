@@ -14,15 +14,18 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Twilio\Rest\Client;
 
-class AuthController extends Controller{
+class AuthController extends Controller
+{
 
-    public function register(Request $request){
-        if(User::where('mobile_no',$request->mobile_no)->first()){
+    public function register(Request $request)
+    {
+        if (User::where('mobile_no', $request->mobile_no)->first()) {
             return response([
                 'message' =>  'Số điện thoại đã được sử dụng',
             ], 500);
         }
-        $user=User::create($request->all());
+
+        $user = User::create($request->all());
         AddressNote::create([
             'user_id' => $user->user_id,
             'user_name' => $user->user_name,
@@ -30,24 +33,25 @@ class AuthController extends Controller{
             'mobile_no' => $user->mobile_no,
         ]);
         return response([
-            'message'=>'Đăng ký thành công',
-            'user'=>$user,
+            'message' => 'Đăng ký thành công',
+            'user' => $user,
         ], 200);
     }
 
-    public function login(Request $request){
-        $user=User::where('mobile_no', $request->mobile_no)->first();
-        if(!$user) {
-            $user=User::create([
+    public function login(Request $request)
+    {
+        $user = User::where('mobile_no', $request->mobile_no)->first();
+        if (!$user) {
+            $user = User::create([
                 'last_name' => 'Guest',
                 'mobile_no' => $request->mobile_no,
                 'birth' => DB::raw('CURRENT_TIMESTAMP'),
-            ]);   
-        } 
+            ]);
+        }
 
         $sendOtp = $this->sendSmsNotification($user);
 
-        if($sendOtp) return response([
+        if ($sendOtp) return response([
             'error' => false,
         ], 200);
         else return response([
@@ -55,23 +59,24 @@ class AuthController extends Controller{
         ], 500);
     }
 
-    public function logout(){
+    public function logout()
+    {
         Auth::logout();
         return response()->json(['message' => 'Đã đăng xuất']);
     }
 
-    public function checkOtp(Request $request){
-        $user=User::where('mobile_no', $request->mobile_no)->first();
+    public function checkOtp(Request $request)
+    {
+        $user = User::where('mobile_no', $request->mobile_no)->first();
         $verificationCode = VerificationCode::where('user_id', $user->id)->latest()->first();
 
         $now = Carbon::now();
 
-        if(strcmp($verificationCode, $request->otp) && $now->isBefore($verificationCode->expire_at)){
+        if (strcmp($verificationCode, $request->otp) && $now->isBefore($verificationCode->expire_at)) {
             return response([
                 'userInfo' => $user,
             ]);
-        }
-        else return response([
+        } else return response([
             'userInfo' => NULL,
         ]);
     }
@@ -80,15 +85,16 @@ class AuthController extends Controller{
     {
         $account_sid = getenv("TWILIO_SID");
         $auth_token = getenv("TWILIO_TOKEN");
-        $twilio_number =getenv("TWILIO_FROM");
-        $client = new Client($account_sid, $auth_token);        
-        $receiverNumber=$user->mobile_no;
+        $twilio_number = getenv("TWILIO_FROM");
+        $client = new Client($account_sid, $auth_token);
+        $receiverNumber = $user->mobile_no;
         $otp = $this->generate($user);
-        $message = 'Your OTP to login is: '.$otp;
+        $message = 'Your OTP to login is: ' . $otp;
 
-        $result=$client->messages->create($receiverNumber, [
-            'from' => $twilio_number, 
-            'body' => $message]);
+        $result = $client->messages->create($receiverNumber, [
+            'from' => $twilio_number,
+            'body' => $message
+        ]);
         return $result;
     }
 
@@ -96,9 +102,9 @@ class AuthController extends Controller{
     {
         # Generate An OTP
         $verificationCode = $this->generateOtp($user);
-        
+
         # Return With OTP 
-        return $verificationCode->otp; 
+        return $verificationCode->otp;
     }
 
     public function generateOtp($user)
@@ -108,7 +114,7 @@ class AuthController extends Controller{
 
         $now = Carbon::now();
 
-        if($verificationCode && $now->isBefore($verificationCode->expire_at)){
+        if ($verificationCode && $now->isBefore($verificationCode->expire_at)) {
             return $verificationCode;
         }
 
@@ -120,6 +126,19 @@ class AuthController extends Controller{
         ]);
     }
 
+    public function addMobileNumToTwilio(Request $request)
+    {
+        $sid = getenv("TWILIO_SID");
+        $token = getenv("TWILIO_TOKEN");
+        $twilio = new Client($sid, $token);
+
+        $validation_request = $twilio->validationRequests
+            ->create(
+                $request->mobile_no, // phoneNumber
+                ["friendlyName" => "My Home Phone Number"]
+            );
+        return $validation_request;
+    }
     // public function changePassword(Request $request){
     //     $this->validate($request, [
     //         'old_password'=>'required|min:8|max:100',

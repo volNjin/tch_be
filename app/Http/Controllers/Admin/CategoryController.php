@@ -23,7 +23,7 @@ class CategoryController extends Controller
             ]);
             
             return response([
-                'error' => 'Thêm danh mục thành công',
+                'message' => 'Thêm danh mục thành công',
                 'category'=> $category,
             ]);
     }
