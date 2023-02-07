@@ -16,10 +16,9 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $productList = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
-            ->where('active', 1)
-            ->orderby('id')
-            ->get();
+        $productList = Product::where('active', 1)
+                            ->orderby('id')
+                            ->get();
         return response([
             'products' => $productList,
         ]);
@@ -51,11 +50,10 @@ class ProductController extends Controller
             }
         }
         foreach ($categoryList as $category) {
-            $product_list = Product::select('id', 'name', 'description', 'price', 'price_sale', 'image_url')
-                ->where('category_id', $category->id)
-                ->where('active', 1)
-                ->orderby('id')
-                ->get();
+            $product_list = Product::where('category_id', $category->id)
+                                    ->where('active', 1)
+                                    ->orderby('id')
+                                    ->get();
             foreach ($product_list as $product) {
                 $productList->push($product);
             }
@@ -87,6 +85,7 @@ class ProductController extends Controller
         $sameCategory = Product::select('id', 'name', 'category_id', 'description', 'price', 'price_sale', 'image_url')
             ->where('category_id', $productInfo->category_id)
             ->where('id', "<>", $request->product_id)
+            ->where('active', 1)
             ->get();
 
         return response([
