@@ -91,6 +91,16 @@ class OrderController extends Controller
         ]);
     }
 
+    public function getOrderInfo(Request $request){
+        $order = Order::where('order_id', $request->order_id)
+                        ->first();
+        $products = $this->getOrderItems($order->order_id);
+        return response([
+            'order_info' => $order,
+            'productsOfOrder' => $products,
+        ]);
+    }
+
     public function getSuccessOrders(){
         $orders = Order::where('state', 1)
                         ->orderby('id')
