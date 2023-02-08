@@ -48,6 +48,7 @@ Route::group(['prefix' => 'admin'], function(){
     Route::get('order/getSuccessOrders', [OrderController::class, 'getSuccessOrders']);
     Route::post('order/getOrderItems', [OrderController::class, 'getOrderItems']);
     Route::post('order/getOrderInfo', [OrderController::class, 'getOrderInfo']);
+    Route::post('order/paidOrder', [OrderController::class, 'paidOrder']);
     Route::post('order/acceptOrder', [OrderController::class, 'acceptOrder']);
     Route::post('order/cancelOrder', [OrderController::class, 'cancelOrder']);
 });

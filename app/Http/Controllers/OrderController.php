@@ -25,7 +25,6 @@ class OrderController extends Controller
                 'shipcost' => '15000',
                 'total_price' => $request->total_price,
                 'payment_method' => $request->payment_method,
-                'state' => 0
             ]);
             $order->order_id="TCH".time()."".$order->id;
             $order->save();
@@ -61,6 +60,13 @@ class OrderController extends Controller
                 'order_id' => NULL,
             ]);
         };
+    }
+
+    public function paidOrder(Request $request){
+        $order=Order::where('order_id',$request->order_id)->first();
+        $order->state=0;
+        $order->save();
+        return $order;
     }
 
     public function acceptOrder(Request $request){
