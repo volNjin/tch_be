@@ -117,17 +117,23 @@ class ProductController extends Controller
                 'message' => 'Đã có sản phẩm này'
             ]);
         }
-        try {
-            $product = Product::create($request->all());
+            $product = Product::create([
+                'name' => $request->name,
+                'category_id' =>$request->category_id,
+                'description' => $request->description,
+                'price' => $request->price,
+                'price_sale'=> $request->price_sale,
+                'active' => 1,
+                'image_url' => $request->image_url
+            ]);
+            ToppingProduct::create([
+                'product_id' => $product->id,
+                'topping_id' => [1,2,3,4,5],
+            ]);
             return response([
                 'message' => "Thêm sản phẩm thành công",
                 'product' => $product,
             ], 200);
-        } catch (\Exception $err) {
-            return response([
-                'message' => 'Thêm sản phẩm không thành công'
-            ], 500);
-        }
     }
 
     public function update(Request $request)
