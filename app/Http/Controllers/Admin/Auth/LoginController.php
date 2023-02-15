@@ -16,7 +16,7 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $admin = Admin::where('username', $request->username)->first();
-        if (!($admin))
+        if ($admin)
             if (Hash::check($request->password, $admin->password)) {
                 return response([
                     'error' => false,
