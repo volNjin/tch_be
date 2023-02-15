@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Auth\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,7 @@ use App\Http\Controllers\User\UpdateInfo;
     return $request->user();
 });*/
 Route::group(['prefix' => 'admin'], function(){
+    Route::post('auth/login', [LoginController::class, 'login']);
 
     Route::post('category/create', [CategoryController::class, 'create']);
     Route::get('category/index', [CategoryController::class, 'index']);
