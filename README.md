@@ -1,3 +1,5 @@
+## Project sử dụng xampp để chạy 
+
 ## Cài đặt môi trường trong file .env
 
 ### Thiết lập cơ sở dữ liệu
