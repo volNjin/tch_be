@@ -5,3 +5,7 @@
   - Đăng ký tài khoản [Twilio](https://www.twilio.com).
   - Đăng ký số điện thoại (TWILIO_FROM) để gửi tin nhắn
   - Thêm TWILIO_SID, TWILIO_TOKEN, TWILIO_FROM vào file .env
+### Cài đặt twilio/sdk Package
+```
+composer require twilio/sdk
+```
