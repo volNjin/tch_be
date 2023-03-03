@@ -1,4 +1,4 @@
-## Project sử dụng xampp để chạy 
+## Project sử dụng xampp để chạy backend
 
 ## Cài đặt môi trường trong file .env
 
